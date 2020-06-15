@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}
+БибосЛенд
+{% endblock %}
+
+{% block body %}
+<div class="container">
+  <div class="row row-cols-1">
+    {% for i in items %}
+    <a href="{% url 'ShopApp:detail' i.id %}">
+    <div class="col mb-4">
+      <div class="card">
+        <!img src="..." class="card-img-top", alt="...">
+        <div class="card-body">
+          <h5 class="card-title">{{i.name}}</h5>
+          <p class="card-text">price: {{i.price}}</p>
+        </div>
+      </div>
+    </div>
+    </a>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

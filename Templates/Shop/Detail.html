@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}
+БибосЛенд
+{% endblock %}
+
+{% block body %}
+<div class="container">
+  <p><a href="{% url 'ShopApp:catalog' %}">Назад к каталогу</a></p>
+</div>
+
+<div class="container">
+  <h3>{{item.name}}</h3>
+</div>
+
+<div class="container">
+  <p>{{item.description}}</p>
+</div>
+
+<div class="container mt-4">
+  <form method="post" action="{% url 'ShopApp:add' item.id%}">
+    {% csrf_token %}
+    {% include 'form_field.html' with form=add_form %}
+    <input type="submit" class="btn btn-outline-primary" value="В корзину", name="add_item">
+  </form>
+<div/>
+
+<div class="container mt-4">
+  <div class="accordion" id="accordionExample">
+  <div class="card">
+    <div class="card-header" id="headingOne">
+      <h2 class="mb-0">
+        <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+          Оставить комментарий
+        </button>
+      </h2>
+    </div>
+
+    <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">
+      <div class="card-body">
+        {% if request.user.is_authenticated %}
+        <form method="post">
+          {% csrf_token %}
+          {% include 'form_field.html' with form=comment_form %}
+          <input type="submit" class="btn btn-primary" value="Comment" name="add_comment">
+        </form>
+        {% else %}
+          <p>Войдите или зареистрируйтесь, чтобы оставить комментарий</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  </div>
+</div>
+
+<div class="container mt-4">
+  {% for c in comments %}
+  <div class="card mb-4">
+    <div class="card-body">
+      <blockquote class="blockquote mb-0">
+        <p>{{c.text}}</p>
+        <footer class="blockquote-footer">{{c.added}} by {{c.user.username}}. Mark: {{c.mark}}</footer>
+      </blockquote>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

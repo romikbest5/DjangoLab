@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}
+БибосПокупки
+{% endblock %}
+
+{% block body %}
+{% if request.session.cart_size > 0 %}
+<div class="container">
+    {% for item, quantity in cart_items %}
+    <div class="card mb-4">
+        <div class="card-body">
+          <blockquote class="blockquote mb-0">
+            <p>{{item.name}} : {{quantity}}</p>
+          </blockquote>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+<div class="container">
+    <form method="post", action="{% url 'ShopApp:clear' %}">
+        {% csrf_token %}
+        <input type="submit" class="btn btn-outline-primary btn-lg btn-block" value="Очистить корзину">>
+    </form>
+</div>
+{% else %}
+<div class="container">
+<p>В вашей корзине пока что нет покупок, перейдите в каталог, чтобы добавить</p>
+</div>
+{% endif %}
+{% endblock %}
