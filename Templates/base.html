@@ -23,7 +23,11 @@
       <h3><a class="nav-link" href="{% url 'ShopApp:catalog' %}">Каталог</a></h3>
       {% if request.user.is_authenticated %}
       <h3><a class="nav-link">{{request.user.username}}</a></h3>
+      {% if request.session.cart_size > 0 %}
       <h3><a class="nav-link" href="#" data-toggle="modal" data-target="#staticBackdrop">Выход</a></h3>
+      {% else %}
+      <h3><a class="nav-link" href="{% url 'AuthenticationApp:logout' %}?next={{request.path}}">Выход</a></h3>
+      {% endif %}
       {% else %}
       <h3><a class="nav-link" href="{% url 'AuthenticationApp:login' %}?next={{request.path}}">Вход</a></h3>
       <h3><a class="nav-link" href="{% url 'AuthenticationApp:register' %}?next={{request.path}}">Регистрация</a></h3>
