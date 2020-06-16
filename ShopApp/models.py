@@ -20,7 +20,11 @@ class Item(models.Model):
         for c in comments:
             average_score += c.mark
 
-        average_score = average_score/len(comments)
+        length = len(comments)
+        if length > 0:
+            average_score = average_score/length
+        else:
+            average_score = 0
         return average_score
 
 
