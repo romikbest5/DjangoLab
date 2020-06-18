@@ -14,7 +14,7 @@ class CommentForm(forms.Form):
 
 
 class AddToCartForm(forms.Form):
-    quantity = forms.TypedChoiceField(choices=PRODUCT_QUANTITY_CHOICES, coerce=int)
+    quantity = forms.TypedChoiceField(label="Кол-во",choices=PRODUCT_QUANTITY_CHOICES, coerce=int)
 
 
 class OrderForm(forms.Form):
