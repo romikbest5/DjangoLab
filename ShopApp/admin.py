@@ -33,8 +33,28 @@ class ItemAdmin(admin.ModelAdmin):
     inlines = [CommentInLine,]
 
 
+class OrderInline(admin.TabularInline):
+    def has_add_permission(self, request, obj):
+        return False
+
+    model = models.OrderElement
+    fields = ('item', 'amount')
+    readonly_fields = ('item',)
+    ordering = ('-amount',)
+    show_change_link = False
+
+
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ('name', 'email', 'added', 'is_done')
+    fields = ('name', 'email', 'added', 'is_done')
+    readonly_fields = ('added',)
+
+    inlines = [OrderInline, ]
+
+
 
 admin.site.register(models.Item, ItemAdmin)
 admin.site.register(models.Comment, CommentAdmin)
+admin.site.register(models.Order, OrderAdmin)
 
 # Register your models here.

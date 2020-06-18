@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect
 from django.http import Http404, HttpResponse
-from .models import Item, Comment
+from .models import Item, Comment, Order, OrderElement
 from django.contrib.auth.models import User
-from .forms import CommentForm, AddToCartForm
+from .forms import CommentForm, AddToCartForm, OrderForm
 from django.conf import settings
+from .Cart import Cart
 
 def catalog(request):
     pattern = 'Shop/Catalog.html'
@@ -34,59 +35,6 @@ def detail(request, item_id):
 
     return render(request, pattern, context)
 
-class Cart:
-    def __init__(self, session):
-        self.session = session
-        cart = self.session.get(settings.CART_SESSION_IDENTIFIER)
-        if not cart:
-            cart = self.session[settings.CART_SESSION_IDENTIFIER] = []
-            self.session[settings.CART_SESSION_SIZE_IDENTIFIER] = 0
-        self.cart = cart
-
-    def add(self, item_id, quantity):
-        id = str(item_id)
-        updated = False
-        for elem in self.cart:
-            if elem['id'] == id:
-                elem['quantity'] += quantity
-                updated = True
-        if not updated:
-            self.cart.append({'id': id, 'quantity': quantity})
-        self.save()
-
-    def save(self):
-        self.session[settings.CART_SESSION_IDENTIFIER] = self.cart
-        self.session[settings.CART_SESSION_SIZE_IDENTIFIER] = self.count()
-        self.session.modified = True
-
-    def clear(self):
-        self.session[settings.CART_SESSION_IDENTIFIER] = []
-        self.session[settings.CART_SESSION_SIZE_IDENTIFIER] = 0
-        self.session.modified = True
-
-    def __len__(self):
-        return len(self.cart)
-
-    def count(self):
-        counter = 0
-        for elem in self.cart:
-            counter += elem['quantity']
-        return counter
-
-    def to_list(self):
-        items_id = []
-        res_list = []
-        for elem in self.cart:
-            items_id.append(int(elem['id']))
-            res_list.append([items_id[-1], elem['quantity']])
-        res_list.sort()
-        items = Item.objects.filter(id__in=items_id).order_by('id')
-        for i in range(len(res_list)):
-            res_list[i][0] = items[i]
-        return res_list
-
-
-
 
 def add_item(request, item_id):
     pattern = 'Shop/Detail.html'
@@ -109,8 +57,14 @@ def add_item(request, item_id):
 def cart(request):
     pattern = 'Shop/Cart.html'
     context = {
-        'cart_items': Cart(request.session).to_list()
+        'cart_items': Cart(request.session).to_list(),
+        'order_form': OrderForm()
     }
+
+    cart_sum = 0
+    for item in context['cart_items']:
+        cart_sum += (item[0].price * item[1])
+    context['cart_sum'] = cart_sum
 
     return render(request, pattern, context)
 
@@ -124,3 +78,23 @@ def clear_cart(request):
     Cart(request.session).clear()
 
     return render(request, pattern, context)
+
+
+def order(request):
+    if request.method == 'POST':
+        form = OrderForm(request.POST)
+        if form.is_valid():
+            name = form.cleaned_data.get('name', None)
+            email = form.cleaned_data.get('email', None)
+            new_order = Order(name=name, email=email, is_done=False)
+            new_order.save()
+
+            order_items = Cart(request.session).to_list()
+            for i in order_items:
+                item = i[0]
+                amount = i[1]
+                order_item = OrderElement(order=new_order, item=item, amount=amount)
+                order_item.save()
+
+    Cart(request.session).clear()
+    return redirect('ShopApp:cart')

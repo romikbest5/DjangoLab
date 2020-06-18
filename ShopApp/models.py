@@ -37,3 +37,22 @@ class Comment(models.Model):
     
     def __str__(self):
         return self.text
+
+
+class Order(models.Model):
+    name = models.CharField('имя заказчика', max_length=50)
+    email = models.CharField('контакт для связи', max_length=50)
+    added = models.DateField('дата добавления', default=timezone.now)
+    is_done = models.BooleanField('заказ обработан', default=False)
+
+    def __str__(self):
+        return self.name
+
+
+class OrderElement(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    amount = models.IntegerField('Кол-ва товара', default=0)
+
+    def __str__(self):
+        return self.item.name

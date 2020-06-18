@@ -17,12 +17,12 @@
       }
     </script>
   </head>
-  <body style="background-image:url(https://media.discordapp.net/attachments/585865247441813504/722584241023746118/Asuna.png);">
+  <body class="text-white" style="background-image:url(https://media.discordapp.net/attachments/585865247441813504/722584241023746118/Asuna.png);">
     <nav class="nav mb-4" style="background-color: #f2f2f2">
       <h3><a class="nav-link" href="{% url 'main' %}">Главная</a></h3>
       <h3><a class="nav-link" href="{% url 'ShopApp:catalog' %}">Каталог</a></h3>
       {% if request.user.is_authenticated %}
-      <h3><a class="nav-link">{{request.user.username}}</a></h3>
+      <h3><a class="nav-link text-dark">{{request.user.username}}</a></h3>
       {% if request.session.cart_size > 0 %}
       <h3><a class="nav-link" href="#" data-toggle="modal" data-target="#staticBackdrop">Выход</a></h3>
       {% else %}
@@ -44,13 +44,13 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="staticBackdropLabel">Подтвердите действие</h5>
+            <h5 class="modal-title text-dark" id="staticBackdropLabel">Подтвердите действие</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
           <div class="modal-body">
-            <p>При выходе все добавленные в корзину товары будут удалены! Все равно выйти?</p>
+            <p class="text-dark">При выходе все добавленные в корзину товары будут удалены! Все равно выйти?</p>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Отменить</button>
